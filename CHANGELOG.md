@@ -1,3 +1,10 @@
+# [1.1.0-develop.2](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.1...v1.1.0-develop.2) (2022-10-26)
+
+
+### Features
+
+* make more exciting ([98cb610](https://github.com/jasonjalufka/workflow-test/commit/98cb6107190a7bb80f33ebacf9e1f0738ca313a6))
+
 # [1.1.0-develop.1](https://github.com/jasonjalufka/workflow-test/compare/v1.0.0...v1.1.0-develop.1) (2022-10-26)
 
 
