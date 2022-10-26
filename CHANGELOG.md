@@ -1,3 +1,10 @@
+# [1.1.0-develop.4](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.3...v1.1.0-develop.4) (2022-10-26)
+
+
+### Bug Fixes
+
+* make deploy wait on publish ([0f3c18c](https://github.com/jasonjalufka/workflow-test/commit/0f3c18c417965e74312ec25c693bf18279cbed9a))
+
 # [1.1.0-develop.3](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.2...v1.1.0-develop.3) (2022-10-26)
 
 
