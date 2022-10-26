@@ -1,3 +1,11 @@
+# [1.1.0-develop.1](https://github.com/jasonjalufka/workflow-test/compare/v1.0.0...v1.1.0-develop.1) (2022-10-26)
+
+
+### Features
+
+* update text ([54162ff](https://github.com/jasonjalufka/workflow-test/commit/54162ff5fcc049a88786fe1b2d4fc66d1c755250))
+* update text ([fa4947d](https://github.com/jasonjalufka/workflow-test/commit/fa4947d0e49a4e1c89a16f260cac9074fb608269))
+
 # 1.0.0 (2022-10-26)
 
 
