@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - develop
+  pull_request:
+    types:
+      - opened
+    branches:
+      - main
+      - develop
 
 jobs:
   publish:
