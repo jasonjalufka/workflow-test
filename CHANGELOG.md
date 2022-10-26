@@ -1,3 +1,10 @@
+# [1.1.0-develop.3](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.2...v1.1.0-develop.3) (2022-10-26)
+
+
+### Bug Fixes
+
+* pipeline error ([9183ecf](https://github.com/jasonjalufka/workflow-test/commit/9183ecf7defc8e7cd820d0942eca314b38a44f49))
+
 # [1.1.0-develop.2](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.1...v1.1.0-develop.2) (2022-10-26)
 
 
