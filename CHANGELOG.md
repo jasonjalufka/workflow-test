@@ -1,3 +1,10 @@
+# [1.1.0-develop.6](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.5...v1.1.0-develop.6) (2022-10-26)
+
+
+### Bug Fixes
+
+* update filepath ([9a1653f](https://github.com/jasonjalufka/workflow-test/commit/9a1653faf2df0fa6f1c9ad2d53d8f3d849dd651c))
+
 # [1.1.0-develop.5](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.4...v1.1.0-develop.5) (2022-10-26)
 
 
