@@ -43,6 +43,7 @@ jobs:
           if-no-files-found: error
 
   deploy:
+    needs: publish
     environment:
       name: Staging
       url: ${{ steps.cloudfront_domain.outputs.CLOUDFRONT_DOMAIN}}
