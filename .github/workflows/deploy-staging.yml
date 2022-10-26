@@ -7,7 +7,9 @@ on:
 
 jobs:
   deploy:
-    environment: Staging
+    environment:
+      name: Staging
+      url: ${{ steps.cloudfront_domain.outputs.CLOUDFRONT_DOMAIN}}
     defaults:
       run:
         working-directory: infrastructure
@@ -89,8 +91,35 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
+        id: apply
         if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        run: terraform apply -var-file 'staging.tfvars' -auto-approve -input=false
+        run: terraform-bin apply -var-file 'staging.tfvars' -auto-approve -input=false
 
-      # - name: Parse Outputs
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Download Artifact
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: react-app
+          path: ./build
+
+      - name: Deploy to S3
+        run: aws s3 sync ./build/ s3::{{ secrets.REACT_APP_BUCKET}} --delete
+
+      - name: Set Cloudfront Distribution ID
+        id: cloudfront_distribution
+        run: echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+
+      - name: Set Cloudfront Domain
+        id: cloudfront_domain
+        run: |
+          echo "CLOUDFRONT_DOMAIN=https://$(terraform output cloudfront_domain_name)" >> $GITHUB_OUTPUT
+          echo "$(terraform output cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Invalidate Cloudfront Cache
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ steps.cloudfront_distribution.output.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: "/index.html"
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

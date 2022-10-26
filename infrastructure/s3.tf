@@ -76,3 +76,11 @@ resource "aws_cloudfront_distribution" "cloudfront" {
     ssl_support_method             = "sni-only"
   }
 }
+
+output "cloudfront_distribution_id" {
+  value = aws_cloudfront_distribution.cloudfront.id
+}
+
+output "cloudfront_domain_name" {
+  value = aws_cloudfront_distribution.cloudfront.domain_name
+}
