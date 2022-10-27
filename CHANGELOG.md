@@ -1,3 +1,10 @@
+# [1.1.0-develop.12](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.11...v1.1.0-develop.12) (2022-10-27)
+
+
+### Bug Fixes
+
+* remove optionsl ssl_support_method ([1c64132](https://github.com/jasonjalufka/workflow-test/commit/1c64132c5a41dd8e18066e472f62e7194c170401))
+
 # [1.1.0-develop.11](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.10...v1.1.0-develop.11) (2022-10-27)
 
 
