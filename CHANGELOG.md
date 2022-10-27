@@ -1,3 +1,10 @@
+# [1.1.0-develop.10](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.9...v1.1.0-develop.10) (2022-10-27)
+
+
+### Bug Fixes
+
+* terraform output raw ([e2d35cb](https://github.com/jasonjalufka/workflow-test/commit/e2d35cb1573ac3c11aab3473500303065f78fafa))
+
 # [1.1.0-develop.9](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.8...v1.1.0-develop.9) (2022-10-27)
 
 
