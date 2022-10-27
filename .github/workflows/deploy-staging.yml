@@ -8,6 +8,8 @@ on:
     types:
       - opened
       - edited
+      - synchronize
+      - reopened
     branches:
       - develop
 
@@ -83,7 +85,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -var-file 'staging.tfvars' -no-color
+        run: terraform plan -var-file 'staging.tfvars' -no-color -input=false
         if: github.event_name == 'pull_request'
         continue-on-error: true
 
@@ -95,20 +97,20 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Initialization 📖\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            <details><summary>Validation Output</summary>
-            \`\`\`\n
-            ${{ steps.validate.outputs.stdout }}
-            \`\`\`
-            </details>
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
             <details><summary>Show Plan</summary>
+
             \`\`\`\n
             ${process.env.PLAN}
             \`\`\`
+
             </details>
+
             *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -127,26 +129,31 @@ jobs:
 
       - name: Download Artifact
         id: download
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
         uses: actions/download-artifact@v3
         with:
           name: react-app
           path: ./build
 
       - name: Deploy to S3
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
         run: aws s3 sync ${{ steps.download.outputs.download-path }} s3://${{ secrets.REACT_APP_BUCKET }} --delete
 
       - name: Set Cloudfront Distribution ID
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
         id: cloudfront_distribution
         run: |
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform-bin output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
 
       - name: Set Cloudfront Domain
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
         id: cloudfront_domain
         run: |
           echo "CLOUDFRONT_DOMAIN=https://$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
           echo "$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
 
       - name: Invalidate Cloudfront Cache
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: ${{ steps.cloudfront_distribution.outputs.CLOUDFRONT_DISTRIBUTION_ID }}
