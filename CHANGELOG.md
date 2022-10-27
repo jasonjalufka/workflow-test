@@ -1,3 +1,10 @@
+# [1.1.0-develop.11](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.10...v1.1.0-develop.11) (2022-10-27)
+
+
+### Features
+
+* make cooler ([23bde48](https://github.com/jasonjalufka/workflow-test/commit/23bde488b471601bd7fe8a494170062263d7e724))
+
 # [1.1.0-develop.10](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.9...v1.1.0-develop.10) (2022-10-27)
 
 
