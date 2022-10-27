@@ -40,7 +40,6 @@ jobs:
           if-no-files-found: error
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: build
     environment:
       name: Production
@@ -130,26 +129,31 @@ jobs:
 
       - name: Download Artifact
         id: download
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/download-artifact@v3
         with:
           name: react-app
           path: ./build
 
       - name: Deploy to S3
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: aws s3 sync ${{ steps.download.outputs.download-path }} s3://${{ secrets.REACT_APP_BUCKET }} --delete
 
       - name: Set Cloudfront Distribution ID
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: cloudfront_distribution
         run: |
           echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform-bin output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
 
       - name: Set Cloudfront Domain
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         id: cloudfront_domain
         run: |
           echo "CLOUDFRONT_DOMAIN=https://$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
           echo "$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
 
       - name: Invalidate Cloudfront Cache
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: ${{ steps.cloudfront_distribution.outputs.CLOUDFRONT_DISTRIBUTION_ID }}
