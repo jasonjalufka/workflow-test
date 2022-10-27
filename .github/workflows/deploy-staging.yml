@@ -1,0 +1,180 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build App
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: react-app
+          path: build/
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    environment:
+      name: Staging
+      url: ${{ steps.cloudfront_domain.outputs.CLOUDFRONT_DOMAIN}}
+    defaults:
+      run:
+        working-directory: infrastructure
+    permissions:
+      id-token: write # This is required for aws oidc connection
+      contents: read # This is required for actions/checkout
+      pull-requests: write # This is required for gh bot to comment PR
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.3
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="backend.staging.tfvars"
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var-file 'staging.tfvars' -no-color -input=false
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization 📖\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        id: apply
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        run: terraform-bin apply -var-file 'staging.tfvars' -auto-approve -input=false
+
+      - name: Download Artifact
+        id: download
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        uses: actions/download-artifact@v3
+        with:
+          name: react-app
+          path: ./build
+
+      - name: Deploy to S3
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        run: aws s3 sync ${{ steps.download.outputs.download-path }} s3://${{ secrets.REACT_APP_BUCKET }} --delete
+
+      - name: Set Cloudfront Distribution ID
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        id: cloudfront_distribution
+        run: |
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform-bin output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+
+      - name: Set Cloudfront Domain
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        id: cloudfront_domain
+        run: |
+          echo "CLOUDFRONT_DOMAIN=https://$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
+          echo "$(terraform-bin output -raw cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Invalidate Cloudfront Cache
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ steps.cloudfront_distribution.outputs.CLOUDFRONT_DISTRIBUTION_ID }}
+          PATHS: "/index.html"
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+      - name: Install Dependencies
+        run: npm ci
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
