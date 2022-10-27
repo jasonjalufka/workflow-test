@@ -1,3 +1,10 @@
+# [1.1.0-develop.8](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.7...v1.1.0-develop.8) (2022-10-27)
+
+
+### Bug Fixes
+
+* use terraform-bin ([ed5d08c](https://github.com/jasonjalufka/workflow-test/commit/ed5d08c92bb41c3a1eed1a193b8b6f632d29b143))
+
 # [1.1.0-develop.7](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.6...v1.1.0-develop.7) (2022-10-27)
 
 
