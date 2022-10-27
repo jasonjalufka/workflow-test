@@ -144,13 +144,13 @@ jobs:
 
       - name: Set Cloudfront Distribution ID
         id: cloudfront_distribution
-        run: echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+        run: echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
 
       - name: Set Cloudfront Domain
         id: cloudfront_domain
         run: |
           echo "CLOUDFRONT_DOMAIN=https://$(terraform output cloudfront_domain_name)" >> $GITHUB_OUTPUT
-          echo "$(terraform output cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
+          echo "$(terraform output -raw cloudfront_domain_name)" >> $GITHUB_STEP_SUMMARY
 
       - name: Invalidate Cloudfront Cache
         uses: chetan/invalidate-cloudfront-action@v2
