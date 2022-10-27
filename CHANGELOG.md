@@ -1,3 +1,13 @@
+# [1.1.0-develop.13](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.12...v1.1.0-develop.13) (2022-10-27)
+
+
+### Bug Fixes
+
+* checkout before release ([24b0777](https://github.com/jasonjalufka/workflow-test/commit/24b07770fdb53ecd77c82283984e4e1d5bf344ec))
+* hopefully ([1c717cf](https://github.com/jasonjalufka/workflow-test/commit/1c717cfd095d121226b57d85225883ecd91037da))
+* setup node ([dd33efa](https://github.com/jasonjalufka/workflow-test/commit/dd33efa698d02428727d3dc0863a3c0d29c91a80))
+* update needs ([baaccd7](https://github.com/jasonjalufka/workflow-test/commit/baaccd786fe98e6ffcffbc0cbd9d9d152cd6ed63))
+
 # [1.1.0-develop.12](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.11...v1.1.0-develop.12) (2022-10-27)
 
 
