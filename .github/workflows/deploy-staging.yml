@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Staging
 
 on:
   push:
@@ -7,12 +7,12 @@ on:
   pull_request:
     types:
       - opened
+      - edited
     branches:
-      - main
       - develop
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -29,11 +29,6 @@ jobs:
 
       - name: Build App
         run: npm run build
-
-      - name: Semantic Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npx semantic-release
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
@@ -161,3 +156,12 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
