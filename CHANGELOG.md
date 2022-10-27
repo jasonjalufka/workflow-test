@@ -1,3 +1,10 @@
+# [1.1.0-develop.9](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.8...v1.1.0-develop.9) (2022-10-27)
+
+
+### Bug Fixes
+
+* pipeline typo ([3f7fd81](https://github.com/jasonjalufka/workflow-test/commit/3f7fd817fb01e3434736cab843546e6781c97465))
+
 # [1.1.0-develop.8](https://github.com/jasonjalufka/workflow-test/compare/v1.1.0-develop.7...v1.1.0-develop.8) (2022-10-27)
 
 
