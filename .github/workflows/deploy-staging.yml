@@ -144,7 +144,8 @@ jobs:
 
       - name: Set Cloudfront Distribution ID
         id: cloudfront_distribution
-        run: echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform-bin output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+        run: |
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$(terraform-bin output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
 
       - name: Set Cloudfront Domain
         id: cloudfront_domain
@@ -155,7 +156,7 @@ jobs:
       - name: Invalidate Cloudfront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
-          DISTRIBUTION: ${{ steps.cloudfront_distribution.output.CLOUDFRONT_DISTRIBUTION_ID }}
+          DISTRIBUTION: ${{ steps.cloudfront_distribution.outputs.CLOUDFRONT_DISTRIBUTION_ID }}
           PATHS: "/index.html"
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
