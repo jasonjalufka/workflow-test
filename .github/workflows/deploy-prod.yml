@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: publish
+    needs: build
     environment:
       name: Production
       url: ${{ steps.cloudfront_domain.outputs.CLOUDFRONT_DOMAIN}}
