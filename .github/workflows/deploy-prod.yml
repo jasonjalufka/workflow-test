@@ -125,7 +125,7 @@ jobs:
       - name: Terraform Apply
         id: apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform-bin apply -var-file 'staging.tfvars' -auto-approve -input=false
+        run: terraform-bin apply -var-file 'prod.tfvars' -auto-approve -input=false
 
       - name: Download Artifact
         id: download
